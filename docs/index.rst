@@ -64,6 +64,7 @@ Releases
 .. toctree::
    :maxdepth: 1
 
+   releases/v2016.2.1
    releases/v2016.2
    releases/v2016.1.6
    releases/v2016.1.5
@@ -173,7 +174,7 @@ ar71xx-generic
   - TL-WA830RE (v1, v2)
   - TL-WA850RE (v1)
   - TL-WA860RE (v1)
-  - TL-WA901N/ND (v1, v2, v3)
+  - TL-WA901N/ND (v1, v2, v3, v4)
   - TL-WDR3500 (v1)
   - TL-WDR3600 (v1)
   - TL-WDR4300 (v1)
