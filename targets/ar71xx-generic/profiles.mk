@@ -92,7 +92,7 @@ $(eval $(call GluonModel,TLWR842,tl-wr842n-v3,tp-link-tl-wr842n-nd-v3))
 $(eval $(call GluonProfile,TLWR843))
 $(eval $(call GluonModel,TLWR843,tl-wr843nd-v1,tp-link-tl-wr843n-nd-v1))
 
-# TL-WR941N/ND v2, v3, v4, v5, v6; TL-WR940N/ND v1, v2, v3
+# TL-WR941N/ND v2, v3, v4, v5, v6; TL-WR940N/ND v1, v2, v3, v4
 $(eval $(call GluonProfile,TLWR941))
 $(eval $(call GluonModel,TLWR941,tl-wr941nd-v2,tp-link-tl-wr941n-nd-v2))
 $(eval $(call GluonModel,TLWR941,tl-wr941nd-v3,tp-link-tl-wr941n-nd-v3))
@@ -104,11 +104,16 @@ $(eval $(call GluonModelAlias,TLWR941,tp-link-tl-wr941n-nd-v4,tp-link-tl-wr940n-
 $(eval $(call GluonModelAlias,TLWR941,tp-link-tl-wr941n-nd-v5,tp-link-tl-wr940n-nd-v2))
 $(eval $(call GluonModelAlias,TLWR941,tp-link-tl-wr941n-nd-v6,tp-link-tl-wr940n-nd-v3))
 
+$(eval $(call GluonProfile,TLWR940_REGION,,TLWR941))
+$(eval $(call GluonModel,TLWR940_REGION,tl-wr940n-v4,tp-link-tl-wr940n-v4))
+$(eval $(call GluonProfileFactorySuffix,TLWR940_REGION,-squashfs-factory$(if $(GLUON_REGION),-$(GLUON_REGION)),.bin))
+
 # TL-WR1043N/ND v1, v2, v3
 $(eval $(call GluonProfile,TLWR1043))
 $(eval $(call GluonModel,TLWR1043,tl-wr1043nd-v1,tp-link-tl-wr1043n-nd-v1))
 $(eval $(call GluonModel,TLWR1043,tl-wr1043nd-v2,tp-link-tl-wr1043n-nd-v2))
 $(eval $(call GluonModel,TLWR1043,tl-wr1043nd-v3,tp-link-tl-wr1043n-nd-v3))
+$(eval $(call GluonModel,TLWR1043,tl-wr1043nd-v4,tp-link-tl-wr1043n-nd-v4))
 
 # TL-WDR3500/3600/4300 v1
 $(eval $(call GluonProfile,TLWDR4300))
@@ -388,6 +393,8 @@ $(eval $(call GluonModel,ALFANX,alfa-nx,alfa-network-n2-n5))
 
 ## Meraki
 
+# BROKEN: MAC address uniqueness issues
+ifneq ($(BROKEN),)
 # Meraki MR12/MR62
 $(eval $(call GluonProfile,MR12,rssileds))
 $(eval $(call GluonProfileFactorySuffix,MR12))
@@ -399,6 +406,7 @@ $(eval $(call GluonProfile,MR16,rssileds))
 $(eval $(call GluonProfileFactorySuffix,MR16))
 $(eval $(call GluonModel,MR16,mr16,meraki-mr16))
 $(eval $(call GluonModelAlias,MR16,meraki-mr16,meraki-mr66))
+endif
 
 ## 8devices
 

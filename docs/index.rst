@@ -112,11 +112,6 @@ ar71xx-generic
   - WZR-HP-G300NH2
   - WZR-HP-G450H
 
-* Cisco Meraki
-
-  - MR12 / MR62
-  - MR16 / MR66
-
 * D-Link
 
   - DIR-505 (A1, A2)
@@ -188,9 +183,9 @@ ar71xx-generic
   - TL-WR841N/ND (v3, v5, v7, v8, v9, v10, v11)
   - TL-WR842N/ND (v1, v2, v3)
   - TL-WR843N/ND (v1)
-  - TL-WR940N (v1, v2, v3)
+  - TL-WR940N (v1, v2, v3, v4)
   - TL-WR941ND (v2, v3, v4, v5, v6)
-  - TL-WR1043N/ND (v1, v2, v3)
+  - TL-WR1043N/ND (v1, v2, v3, v4)
   - TL-WR2543N/ND (v1)
 
 * Ubiquiti
