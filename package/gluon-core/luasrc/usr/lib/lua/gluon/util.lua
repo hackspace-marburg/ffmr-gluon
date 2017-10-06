@@ -37,6 +37,7 @@ local hash = require 'hash'
 local sysconfig = require 'gluon.sysconfig'
 local site = require 'gluon.site_config'
 local fs = require 'nixio.fs'
+local platform = require 'gluon.platform'
 
 
 module 'gluon.util'
@@ -223,6 +224,12 @@ local function get_wlan_mac_from_driver(uci, radio, vif)
 end
 
 function get_wlan_mac(uci, radio, index, vif)
+	--- Manually setting any MAC adresses on devices supported by
+	--- rt2x00 or mt76 causes low bandwidth and severe packet loss.
+	if platform.match('ramips', 'mt7620') or platform.match('ramips', 'mt7621') then
+		return ''
+	end
+
 	local addr = get_wlan_mac_from_driver(uci, radio, vif)
 	if addr then
 		return addr

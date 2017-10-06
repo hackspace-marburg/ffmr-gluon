@@ -1,0 +1,41 @@
+From: Oleander Reis <oleander@oleander.cc>
+Date: Sat, 7 Oct 2017 01:24:08 +0200
+Subject: miwifi-mini status LED: Blue instead of red
+
+---
+ target/linux/ramips/base-files/etc/board.d/01_leds | 2 +-
+ target/linux/ramips/base-files/etc/diag.sh         | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/target/linux/ramips/base-files/etc/board.d/01_leds b/target/linux/ramips/base-files/etc/board.d/01_leds
+index 2956defca8..06cf44b0cc 100755
+--- a/target/linux/ramips/base-files/etc/board.d/01_leds
++++ b/target/linux/ramips/base-files/etc/board.d/01_leds
+@@ -227,7 +227,7 @@ miniembplug)
+ 	set_usb_led "$board:green:mobile"
+ 	;;
+ miwifi-mini)
+-	ucidef_set_led_default "power" "power" "$board:red:status" "1"
++	ucidef_set_led_default "power" "power" "$board:blue:status" "1"
+ 	;;
+ mlw221|\
+ mlwg2)
+diff --git a/target/linux/ramips/base-files/etc/diag.sh b/target/linux/ramips/base-files/etc/diag.sh
+index cf3d2ca9c9..3b17a7692b 100644
+--- a/target/linux/ramips/base-files/etc/diag.sh
++++ b/target/linux/ramips/base-files/etc/diag.sh
+@@ -156,10 +156,10 @@ get_status_led() {
+ 		;;
+ 	m3|\
+ 	m4|\
+-	miwifi-nano)
++	miwifi-nano|\
++	miwifi-mini)
+ 		status_led="$board:blue:status"
+ 		;;
+-	miwifi-mini|\
+ 	zte-q7)
+ 		status_led="$board:red:status"
+ 		;;
+-- 
+2.14.2

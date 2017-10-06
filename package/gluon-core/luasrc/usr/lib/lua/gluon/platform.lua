@@ -1,5 +1,5 @@
 local platform_info = require 'platform_info'
-local util = require 'gluon.util'
+local pairs = pairs
 
 local setmetatable = setmetatable
 
@@ -12,6 +12,16 @@ setmetatable(_M,
 	     }
 )
 
+local function contains(table, value)
+   for k, v in pairs(table) do
+      if value == v then
+         return k
+      end
+   end
+   return false
+end
+
+
 function match(target, subtarget, boards)
    if get_target() ~= target then
       return false
@@ -21,7 +31,7 @@ function match(target, subtarget, boards)
       return false
    end
 
-   if boards and not util.contains(boards, get_board_name()) then
+   if boards and not contains(boards, get_board_name()) then
       return false
    end
 
