@@ -3,6 +3,7 @@
 local util = require 'gluon.util'
 local site = require 'gluon.site_config'
 local sysconfig = require 'gluon.sysconfig'
+local platform = require 'gluon.platform'
 local iwinfo = require 'iwinfo'
 
 local uci = require('simple-uci').cursor()
@@ -20,12 +21,20 @@ local function get_channel(radio, config)
   end
 end
 
-local function get_htmode(radio)
+local function is_ac_supported_on(radio)
   local phy = util.find_phy(uci:get_all('wireless', radio))
   if iwinfo.nl80211.hwmodelist(phy).ac then
-    uci:set('wireless', radio, 'htmode', 'VHT20')
+    return true
   else
-    uci:set('wireless', radio, 'htmode', 'HT20')
+    return false
+  end
+end
+
+local function get_htmode(ac_supported)
+  if ac_supported then
+    return 'VHT20'
+  else
+    return 'HT20'
   end
 end
 
@@ -165,14 +174,23 @@ local function configure_radio(radio, index, config)
     return
   end
 
+  local radio_supports_ac = is_ac_supported_on(radio)
   local channel = get_channel(radio, config)
-  local htmode = get_htmode(radio)
+  local htmode = get_htmode(radio_supports_ac)
 
   uci:delete('wireless', radio, 'disabled')
 
   uci:set('wireless', radio, 'channel', channel)
   uci:set('wireless', radio, 'htmode', htmode)
   uci:set('wireless', radio, 'country', site.regdom)
+
+  -- TX power on miwifi-mini is too high. This is a quickfix.
+  if (
+    platform.match('ramips', 'mt7620', {'miwifi-mini'}) and
+    not radio_supports_ac  -- TX power is found to be too high only on 2.4 GHz.
+  ) then
+    uci:set('wireless', radio, 'txpower', '4')  -- educated, non-scientific guess
+  end
 
   if config.supported_rates then
     uci:set_list('wireless', radio, 'supported_rates', config.supported_rates)
