@@ -30,8 +30,14 @@ local function is_ac_supported_on(radio)
   end
 end
 
-local function get_htmode(ac_supported)
-  if ac_supported then
+local function get_htmode(radio_supports_ac)
+  --- Setting anything other than VHT40 or VHT80 on devices supported by
+  --- mt76 causes low bandwidth and severe packet loss.
+  if (
+    platform.match('ramips', 'mt7620') or platform.match('ramips', 'mt7621')
+  ) and radio_supports_ac then
+    return 'VHT40'
+  elseif radio_supports_ac then
     return 'VHT20'
   else
     return 'HT20'
