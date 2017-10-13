@@ -1,0 +1,26 @@
+From: Oleander Reis <oleander@oleander.cc>
+Date: Fri, 13 Oct 2017 11:42:22 +0200
+Subject: mt7620: disable CONFIG_MTD_SPI_NOR_USE_4K_SECTORS
+
+Enabling CONFIG_MTD_SPI_NOR_USE_4K_SECTORS breaks sysupgrades
+from before 925e63e71fa6691f3fa374f71c77d0a91c7e7539.
+---
+ target/linux/ramips/mt7620/config-4.4 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/target/linux/ramips/mt7620/config-4.4 b/target/linux/ramips/mt7620/config-4.4
+index 6683543f94..4ee6e14bc2 100644
+--- a/target/linux/ramips/mt7620/config-4.4
++++ b/target/linux/ramips/mt7620/config-4.4
+@@ -138,7 +138,7 @@ CONFIG_MTD_M25P80=y
+ CONFIG_MTD_NAND_MT7620=y
+ CONFIG_MTD_PHYSMAP=y
+ CONFIG_MTD_SPI_NOR=y
+-CONFIG_MTD_SPI_NOR_USE_4K_SECTORS=y
++# CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is not set
+ CONFIG_MTD_SPLIT_FIRMWARE=y
+ CONFIG_MTD_SPLIT_SEAMA_FW=y
+ CONFIG_MTD_SPLIT_TPLINK_FW=y
+-- 
+2.17.1
+
