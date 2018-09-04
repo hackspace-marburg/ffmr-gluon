@@ -7,3 +7,7 @@ factory
 
 device gl-mt750 gl-mt750
 factory
+
+# Xiaomi
+device xiaomi-miwifi-mini miwifi-mini
+factory
