@@ -3,6 +3,7 @@
 local util = require 'gluon.util'
 local site = require 'gluon.site'
 local sysconfig = require 'gluon.sysconfig'
+local platform = require 'gluon.platform'
 local iwinfo = require 'iwinfo'
 
 local uci = require('simple-uci').cursor()
@@ -21,13 +22,23 @@ local function get_channel(radio, config)
 	return channel or config.channel()
 end
 
-local function get_htmode(radio)
-       local phy = util.find_phy(radio)
-       if iwinfo.nl80211.hwmodelist(phy).ac then
-               return 'VHT20'
-       else
-               return 'HT20'
-       end
+local function is_ac_supported_on(radio)
+	local phy = util.find_phy(radio)
+	return iwinfo.nl80211.hwmodelist(phy).ac
+end
+
+local function get_htmode(radio_supports_ac)
+	--- Setting anything other than VHT40 or VHT80 on devices supported by
+	--- mt76 causes low bandwidth and severe packet loss.
+	if (
+		platform.match('ramips', 'mt7620') or platform.match('ramips', 'mt7621')
+	) and radio_supports_ac then
+		return 'VHT40'
+	elseif radio_supports_ac then
+		return 'VHT20'
+	else
+		return 'HT20'
+	end
 end
 
 local function is_disabled(name)
@@ -161,14 +172,24 @@ util.foreach_radio(uci, function(radio, index, config)
 		return
 	end
 
+	local radio_supports_ac = is_ac_supported_on(radio)
 	local channel = get_channel(radio, config)
-	local htmode = get_htmode(radio)
+	local htmode = get_htmode(radio_supports_ac)
 
 	uci:delete('wireless', radio_name, 'disabled')
 
 	uci:set('wireless', radio_name, 'channel', channel)
 	uci:set('wireless', radio_name, 'htmode', htmode)
 	uci:set('wireless', radio_name, 'country', site.regdom())
+
+	-- TX power on miwifi-mini is too high. This is a quickfix.
+	if (
+		platform.match('ramips', 'mt7620', {'miwifi-mini'}) and
+		not radio_supports_ac  -- TX power is found to be too high only on 2.4 GHz.
+	) then
+		-- educated, non-scientific guess, worked for >1 year in production
+		uci:set('wireless', radio, 'txpower', '4')
+	end
 
 	uci:set_list('wireless', radio_name, 'supported_rates', config.supported_rates())
 	uci:set_list('wireless', radio_name, 'basic_rate', config.basic_rate())
