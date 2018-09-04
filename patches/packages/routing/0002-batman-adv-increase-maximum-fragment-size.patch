@@ -1,0 +1,22 @@
+From: Oleander Reis <oleander@oleander.cc>
+Date: Tue, 04 Sep 2018 21:29:05 +0200
+Subject: batman-adv: increase maximum fragment size to 1312 byte
+
+diff --git a/batman-adv/patches/0012-batman-adv-increase-maximum-fragment-size.patch b/batman-adv/patches/0012-batman-adv-increase-maximum-fragment-size.patch                                                                   
+new file mode 100644
+index 0000000000..9720362b8a
+--- /dev/null
++++ b/batman-adv/patches/0012-batman-adv-increase-maximum-fragment-size.patch
+@@ -0,0 +1,12 @@
++diff --git a/net/batman-adv/main.h b/net/bacman-adv/main.h
++index 057a28a9fe..c5e7b8f729 100644
++--- a/net/batman-adv/main.h
+++++ b/net/batman-adv/main.h
++@@ -201,7 +201,7 @@ enum batadv_uev_type {
++ /* Maximum number of fragments for one packet */
++ #define BATADV_FRAG_MAX_FRAGMENTS 16
++ /* Maxumim size of each fragment */
++-#define BATADV_FRAG_MAX_FRAG_SIZE 1280
+++#define BATADV_FRAG_MAX_FRAG_SIZE 1312
++ /* Time to keep fragments while waiting for rest of the fragments */
++ #define BATADV_FRAG_TIMEOUT 10000
