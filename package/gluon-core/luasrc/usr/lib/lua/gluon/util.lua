@@ -27,6 +27,7 @@ local hash = require 'hash'
 local sysconfig = require 'gluon.sysconfig'
 local site = require 'gluon.site'
 local fs = require 'nixio.fs'
+local platform = require 'gluon.platform'
 
 
 module 'gluon.util'
