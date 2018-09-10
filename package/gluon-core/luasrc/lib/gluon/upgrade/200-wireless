@@ -188,7 +188,7 @@ util.foreach_radio(uci, function(radio, index, config)
 		not radio_supports_ac  -- TX power is found to be too high only on 2.4 GHz.
 	) then
 		-- educated, non-scientific guess, worked for >1 year in production
-		uci:set('wireless', radio, 'txpower', '4')
+		uci:set('wireless', radio_name, 'txpower', '10')
 	end
 
 	uci:set_list('wireless', radio_name, 'supported_rates', config.supported_rates())
