@@ -5,10 +5,10 @@ Subject: ar71xx-generic: Fix flash layout and MAC addresses of Meraki MR12/MR16
 Fixes #993. Only verified for MR16.
 
 ---
- target/linux/ar71xx/files/arch/mips/ath79/mach-mr12.c | 16 +++++++++++-----
- target/linux/ar71xx/files/arch/mips/ath79/mach-mr16.c | 19 ++++++++++++-------
- target/linux/ar71xx/image/generic.mk                  |  4 ++--
- 3 files changed, 25 insertions(+), 14 deletions(-)
+ .../ar71xx/files/arch/mips/ath79/mach-mr12.c  | 16 +++++++++++-----
+ .../ar71xx/files/arch/mips/ath79/mach-mr16.c  | 19 ++++++++++++-------
+ target/linux/ar71xx/image/generic.mk          |  6 +++---
+ 3 files changed, 26 insertions(+), 15 deletions(-)
 
 diff --git a/target/linux/ar71xx/files/arch/mips/ath79/mach-mr12.c b/target/linux/ar71xx/files/arch/mips/ath79/mach-mr12.c
 index 5a337e5c9f..fc547f8d7e 100644
@@ -110,39 +110,22 @@ index 9da21eab5a..0cf61f92eb 100644
  
  MIPS_MACHINE(ATH79_MACH_MR16, "MR16", "Meraki MR16", MR16_setup);
 diff --git a/target/linux/ar71xx/image/generic.mk b/target/linux/ar71xx/image/generic.mk
-index e11a8992f9..df4c3bec27 100644
+index 640557532c..505b4e5fce 100644
 --- a/target/linux/ar71xx/image/generic.mk
 +++ b/target/linux/ar71xx/image/generic.mk
-@@ -185,11 +185,11 @@ define Device/mr12
+@@ -577,9 +577,9 @@ define Device/mr12
    DEVICE_TITLE := Meraki MR12
    DEVICE_PACKAGES := kmod-spi-gpio
-   BOARDNAME = MR12
--  IMAGE_SIZE = 15680k
--  MTDPARTS = spi0.0:256k(u-boot)ro,256k(u-boot-env)ro,13440k(rootfs),2240k(kernel),64k(mac),128k(art)ro,15680k@0x80000(firmware)
-+  IMAGE_SIZE = 15616k
+   BOARDNAME := MR12
+-  ROOTFS_SIZE := 13440k
+-  IMAGE_SIZE := 15680k
+-  MTDPARTS := spi0.0:256k(u-boot)ro,256k(u-boot-env)ro,13440k(rootfs),2240k(kernel),64k(mac),128k(art)ro,15680k@0x80000(firmware)
++  ROOTFS_SIZE := 13312k
++  IMAGE_SIZE := 15616k
 +  MTDPARTS = spi0.0:256k(u-boot)ro,256k(u-boot-env)ro,128k(config)ro,13312k(rootfs),2304k(kernel),128k(art)ro,15616k@0xa0000(firmware)
-   IMAGE/kernel.bin = append-kernel
-   IMAGE/rootfs.bin = append-rootfs | pad-rootfs
--  IMAGE/sysupgrade.bin = append-rootfs | pad-rootfs | pad-to 13440k | append-kernel | check-size $$$$(IMAGE_SIZE)
-+  IMAGE/sysupgrade.bin = append-rootfs | pad-rootfs | pad-to 13312k | append-kernel | check-size $$$$(IMAGE_SIZE)
-   IMAGES := kernel.bin rootfs.bin sysupgrade.bin
- endef
- TARGET_DEVICES += mr12
-@@ -198,11 +198,11 @@ define Device/mr16
-   DEVICE_TITLE := Meraki MR16
-   DEVICE_PACKAGES := kmod-spi-gpio
-   BOARDNAME = MR16
--  IMAGE_SIZE = 15680k
--  MTDPARTS = spi0.0:256k(u-boot)ro,256k(u-boot-env)ro,13440k(rootfs),2240k(kernel),64k(mac),128k(art)ro,15680k@0x80000(firmware)
-+  IMAGE_SIZE = 15616k
-+  MTDPARTS = spi0.0:256k(u-boot)ro,256k(u-boot-env)ro,128k(config)ro,13312k(rootfs),2304k(kernel),128k(art)ro,15616k@0xa0000(firmware)
-   IMAGE/kernel.bin = append-kernel
-   IMAGE/rootfs.bin = append-rootfs | pad-rootfs
--  IMAGE/sysupgrade.bin = append-rootfs | pad-rootfs | pad-to 13440k | append-kernel | check-size $$$$(IMAGE_SIZE)
-+  IMAGE/sysupgrade.bin = append-rootfs | pad-rootfs | pad-to 13312k | append-kernel | check-size $$$$(IMAGE_SIZE)
-   IMAGES := kernel.bin rootfs.bin sysupgrade.bin
- endef
- TARGET_DEVICES += mr16
+   IMAGE/kernel.bin := append-kernel
+   IMAGE/rootfs.bin := append-rootfs | pad-rootfs
+   IMAGE/sysupgrade.bin := append-rootfs | pad-rootfs | pad-to $$$$(ROOTFS_SIZE) | append-kernel | check-size $$$$(IMAGE_SIZE)
 -- 
-2.14.2
+2.19.2
 
