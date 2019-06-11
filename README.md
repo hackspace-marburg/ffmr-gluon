@@ -1,10 +1,12 @@
 Documentation (incomplete at this time, contribute if you can!) may be found at
-https://gluon.readthedocs.org/.
+https://gluon.readthedocs.io/.
 
 If you're new to Gluon and ready to get your feet wet, have a look at the
-[Getting Started Guide](https://gluon.readthedocs.org/en/latest/user/getting_started.html).
+[Getting Started Guide](https://gluon.readthedocs.io/en/latest/user/getting_started.html).
 
-**Gluon IRC channel: `#gluon` in [hackint](https://hackint.org/)**
+Gluon's developers frequent an IRC chatroom at [#gluon](ircs://irc.hackint.org/#gluon)
+on [hackint](https://hackint.org/). There is also a [webchat](https://webirc.hackint.org/#irc://irc.hackint.org/#gluon)
+that allows for access from within your browser.
 
 ## Issues & Feature requests
 
@@ -19,7 +21,7 @@ the future development of Gluon.
 
 Please refrain from using the `master` branch for anything else but development purposes!
 Use the most recent release instead. You can list all releases by running `git tag`
-and switch to one by running `git checkout v2018.1.1 && make update`.
+and switch to one by running `git checkout v2018.2.1 && make update`.
 
 If you're using the autoupdater, do not autoupdate nodes with anything but releases.
 If you upgrade using random master commits the nodes *will break* eventually.

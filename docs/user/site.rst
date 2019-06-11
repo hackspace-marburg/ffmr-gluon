@@ -46,6 +46,22 @@ prefix6
 
        prefix6 = 'fdca::ffee:babe:1::/64'
 
+node_prefix6
+    The ipv6 prefix from which the unique IP-addresses for nodes are selected
+    in babel-based networks. This may overlap with prefix6. e.g.
+    ::
+
+       node_prefix6 = 'fdca::ffee:babe:2::/64'
+
+node_client_prefix6
+    The ipv6 prefix from which the client-specific IP-address is calculated that
+    is assigned to each node by l3roamd to allow efficient communication when 
+    roaming. This is exclusively useful when running a routing mesh protocol
+    like babel. e.g.
+    ::
+
+       node_client_prefix6 = 'fdca::ffee:babe:3::/64'
+
 timezone
     The timezone of your community live in, e.g.
     ::
@@ -67,8 +83,8 @@ opkg \: optional
 
     There are two optional fields in the ``opkg`` section:
 
-    - ``lede`` overrides the default LEDE repository URL. The default URL would
-      correspond to ``http://downloads.lede-project.org/snapshots/packages/%A``
+    - ``openwrt`` overrides the default OpenWrt repository URL. The default URL would
+      correspond to ``http://downloads.openwrt.org/snapshots/packages/%A``
       and usually doesn't need to be changed when nodes are expected to have IPv6
       internet connectivity.
     - ``extra`` specifies a table of additional repositories (with arbitrary keys)
@@ -76,7 +92,7 @@ opkg \: optional
     ::
 
       opkg = {
-        lede = 'http://opkg.services.ffac/lede/snapshots/packages/%A',
+        openwrt = 'http://opkg.services.ffac/openwrt/snapshots/packages/%A',
         extra = {
           gluon = 'http://opkg.services.ffac/modules/gluon-%GS-%GR/%S',
         },
@@ -84,8 +100,8 @@ opkg \: optional
 
     There are various patterns which can be used in the URLs:
 
-    - ``%n`` is replaced by the LEDE version codename
-    - ``%v`` is replaced by the LEDE version number (e.g. "17.01")
+    - ``%d`` is replaced by the OpenWrt distribution name ("openwrt")
+    - ``%v`` is replaced by the OpenWrt version number (e.g. "17.01")
     - ``%S`` is replaced by the target board (e.g. "ar71xx/generic")
     - ``%A`` is replaced by the target architecture (e.g. "mips_24kc")
     - ``%GS`` is replaced by the Gluon site code (as specified in ``site.conf``)
@@ -118,8 +134,15 @@ wifi24 \: optional
     Additionally it is possible to configure the ``supported_rates`` and ``basic_rate``
     of each radio. Both are optional, by default hostapd/driver dictate the rates.
     If ``supported_rates`` is set, ``basic_rate`` is required, because ``basic_rate``
-    has to be a subset of ``supported_rates``.
-    The example below disables 802.11b rates.
+    has to be a subset of ``supported_rates``. Possible values are: 
+
+    - 6000, 9000, 12000, 18000, 24000, 36000, 48000, 54000 (OFDM)
+    - 1000, 5500, 11000 (legacy 802.11b, DSSS)
+
+    The example below disables legacy 802.11b rates (DSSS) for performance reasons.  
+    For backwards compatibility in 802.11, this setting only effects 802.11a/b/g rates. 
+    I.e in 802.11n 6 MBit/s is announced  all time. In 802.11ac the field is used to 
+    derive the length of a packet.
 
     ``ap`` requires a single parameter, a string, named ``ssid`` which sets the
     interface's ESSID. This is the WiFi the clients connect to.
@@ -211,15 +234,31 @@ mesh
     In addition, options specific to the batman-adv routing protocol can be set
     in the *batman_adv* section:
 
-    The optional value *gw_sel_class* sets the gateway selection class. The
-    default is class 20, which is based on the link quality (TQ) only; class 1
-    is calculated from both the TQ and the announced bandwidth.
+    The optional value *routing_algo* allows to set up ``BATMAN_V`` based meshes. 
+    If unset, the routing algorithm will default to ``BATMAN_IV``.
+
+    The optional value *gw_sel_class* sets the gateway selection class, the
+    default is ``20`` for B.A.T.M.A.N. IV and ``5000`` kbit/s for B.A.T.M.A.N. V.
+
+    - **B.A.T.M.A.N. IV:** with the value ``20`` the gateway is selected based
+      on the link quality (TQ) only; with class ``1`` it is calculated from
+      both, the TQ and the announced bandwidth.
+    - **B.A.T.M.A.N. V:** with the value ``1500`` the gateway is selected if the
+      throughput is at least 1500 kbit/s faster than the throughput of the
+      currently selected gateway. 
+
+    For details on determining the threshhold, when to switch to a new gateway,
+    see `batctl manpage`_, section "gw_mode".
+    
+    .. _batctl manpage: https://www.open-mesh.org/projects/batman-adv/wiki/Gateways
+
     ::
 
       mesh = {
         vxlan = true,
         filter_membership_reports = false,
         batman_adv = {
+          routing_algo = 'BATMAN_IV',
           gw_sel_class = 1,
         },
       }
@@ -259,6 +298,9 @@ mesh_vpn
     sections in the same configuration file, as only one of the packages *gluon-mesh-vpn-fastd*
     and *gluon-mesh-vpn-tunneldigger* should be installed with the current
     implementation.
+
+    **Note:** It may be interesting to include the package *gluon-iptables-clamp-mss-to-pmtu*
+    in the build when using *gluon-mesh-babel* to work around icmp blackholes on the internet.
 
     ::
 
@@ -376,6 +418,8 @@ autoupdater \: package
     All configured mirrors must be reachable from the nodes via IPv6. If you don't want to set an IPv6 address
     explicitly, but use a hostname (which is recommended), see also the :ref:`FAQ <faq-dns>`.
 
+.. _user-site-config_mode:
+
 config_mode \: optional
     Additional configuration for the configuration web interface. All values are
     optional.
@@ -384,10 +428,19 @@ config_mode \: optional
     and the node's primary MAC address is assigned. Manually setting a hostname
     can be enforced by setting *hostname.optional* to *false*.
 
-    By default, no altitude fields are shown by the *gluon-config-mode-geo-location*
-    package. If *geo_location.show_altitude* is set to *true*, the *gluon-config-mode:altitude-label*
-    and *gluon-config-mode:altitude-help* strings must be provided in the site i18n
-    data as well.
+    To not prefill the hostname-field in config-mode with the default hostname,
+    set *hostname.prefill* to *false*.
+
+    By default, no altitude field is shown by the *gluon-config-mode-geo-location*
+    package. Set *geo_location.show_altitude* to *true* if you want the altitude
+    field to be visible.
+
+    The *geo_location.osm* section is only relevant when the *gluon-config-mode-geo-location-osm*
+    package is used. The *center.lon* and *center.lat* values are mandatory in this case and
+    define the default center of the map when no position has been picked yet. The *zoom* level
+    defaults to 12 in this case. *openlayers_url* allows to override the base URL of the
+    *build/ol.js* and *css/ol.css* files (the default is
+    ``https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.2.0``).
 
     The remote login page only shows SSH key configuration by default. A
     password form can be displayed by setting *remote_login.show_password_form*
@@ -398,9 +451,18 @@ config_mode \: optional
         config_mode = {
           hostname = {
             optional = false,
+            prefill = true,
           },
           geo_location = {
             show_altitude = true,
+            osm = {
+              center = {
+                lat = 52.951947558,
+                lon = 8.744238281,
+              },
+              zoom = 13,
+              -- openlayers_url = 'http://ffac.example.org/openlayer',
+            },
           },
           remote_login = {
             show_password_form = true,
@@ -561,12 +623,6 @@ gluon-config-mode:pubkey
 gluon-config-mode:novpn
     Information shown on the reboot page, if the mesh VPN was not selected.
 
-gluon-config-mode:altitude-label
-    Label for the ``altitude`` field
-
-gluon-config-mode:altitude-help
-    Description for the usage of the ``altitude`` field
-
 gluon-config-mode:contact-help
     Description for the usage of the ``contact`` field
 
@@ -577,7 +633,10 @@ gluon-config-mode:hostname-help
     Description for the usage of the ``hostname`` field
 
 gluon-config-mode:geo-location-help
-    Description for the usage of the longitude/latitude fields
+    Description for the usage of the longitude/latitude fields (and altitude, if shown)
+
+gluon-config-mode:altitude-label
+    Label for the ``altitude`` field
 
 gluon-config-mode:reboot
     General information shown on the reboot page.
@@ -667,41 +726,5 @@ modules
 site-repos in the wild
 ^^^^^^^^^^^^^^^^^^^^^^
 
-This is a non-exhaustive list of site-repos from various communities:
-
-* `site-ffa <https://github.com/tecff/site-ffa>`_ (Altdorf, Landshut & Umgebung)
-* `site-ffac <https://github.com/ffac/site>`_ (Regio Aachen)
-* `site-ffbs <https://github.com/ffbs/site-ffbs>`_ (Braunschweig)
-* `site-ffhb <https://github.com/FreifunkBremen/gluon-site-ffhb>`_ (Bremen)
-* `site-ffda <https://git.darmstadt.ccc.de/ffda/site>`_ (Darmstadt)
-* `site-ff3l <https://github.com/ff3l/site-ff3l>`_ (Dreiländereck)
-* `site-ffeh <https://github.com/freifunk-ehingen/site-ffeh>`_ (Ehingen)
-* `site-fffl <https://github.com/freifunk-flensburg/site-fffl>`_ (Flensburg)
-* `site-ffgoe <https://github.com/freifunk-goettingen/site-ffgoe>`_ (Göttingen)
-* `site-ffgt-rhw <https://github.com/ffgtso/site-ffgt-rhw>`_ (Guetersloh)
-* `site-ffhh <https://github.com/freifunkhamburg/site-ffhh>`_ (Hamburg)
-* `site-ffho <https://git.ffho.net/freifunkhochstift/ffho-site>`_ (Hochstift)
-* `site-ffhgw <https://github.com/lorenzo-greifswald/site-ffhgw>`_ (Greifswald)
-* `site-ffka <https://github.com/ffka/site-ffka>`_ (Karlsruhe)
-* `site-ffki <https://git.freifunk.in-kiel.de/ffki-site/>`_ (Kiel)
-* `site-fflz <https://github.com/freifunk-lausitz/site-fflz>`_ (Lausitz)
-* `site-ffl <https://github.com/freifunk-leipzig/freifunk-gluon-leipzig>`_ (Leipzig)
-* `site-ffhl <https://github.com/freifunk-luebeck/site-ffhl>`_ (Lübeck)
-* `site-fflg <https://github.com/kartenkarsten/site-fflg>`_ (Lüneburg)
-* `site-ffmd <https://github.com/FreifunkMD/site-ffmd>`_ (Magdeburg)
-* `site-ffmwu <https://github.com/freifunk-mwu/sites-ffmwu>`_ (Mainz, Wiesbaden & Umgebung)
-* `site-ffmyk <https://github.com/FreifunkMYK/site-ffmyk>`_ (Mayen-Koblenz)
-* `site-ffmo <https://github.com/ffruhr/site-ffmo>`_ (Moers)
-* `site-ffmg <https://github.com/ffruhr/site-ffmg>`_ (Mönchengladbach)
-* `site-ffm <https://github.com/freifunkMUC/site-ffm>`_ (München)
-* `site-ffhmue <https://github.com/Freifunk-Muenden/site-conf>`_ (Münden)
-* `site-ffms <https://github.com/FreiFunkMuenster/site-ffms>`_ (Münsterland)
-* `site-neuss <https://github.com/ffne/site-neuss>`_ (Neuss)
-* `site-ffniers <https://github.com/ffruhr/site-ffniers>`_ (Niersufer)
-* `site-ffndh <https://github.com/freifunk-nordheide/ffnordheide/tree/ffnh-lede/ffndh-site>`_ (Nordheide)
-* `site-ffnw <https://git.nordwest.freifunk.net/ffnw-firmware/siteconf/tree/master>`_ (Nordwest)
-* `site-ffrgb <https://github.com/ffrgb/site-ffrgb>`_ (Regensburg)
-* `site-ffrn <https://github.com/Freifunk-Rhein-Neckar/site-ffrn>`_ (Rhein-Neckar)
-* `site-ffruhr <https://github.com/ffruhr?utf8=✓&query=site>`_ (Ruhrgebiet, Multi-Communities)
-* `site-ffs <https://github.com/freifunk-stuttgart/site-ffs>`_ (Stuttgart)
-* `site-fftr <https://github.com/freifunktrier/site-fftr>`_ (Trier)
+A non-exhaustive list of site-repos from various communities can be found on the
+wiki: https://github.com/freifunk-gluon/gluon/wiki/Site-Configurations
