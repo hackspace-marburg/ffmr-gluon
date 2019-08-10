@@ -9,34 +9,39 @@ Subject: miwifi-mini status LED: Blue instead of red
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/target/linux/ramips/base-files/etc/board.d/01_leds b/target/linux/ramips/base-files/etc/board.d/01_leds
-index cc30999e1c..9921b170c1 100755
+index 6057275978..63d5230796 100755
 --- a/target/linux/ramips/base-files/etc/board.d/01_leds
 +++ b/target/linux/ramips/base-files/etc/board.d/01_leds
-@@ -227,7 +227,7 @@ miniembplug)
- 	set_usb_led "$board:green:mobile"
+@@ -273,7 +273,7 @@ mir3g)
+ 	ucidef_set_led_switch "lan2-amber" "LAN2 (amber)" "$boardname:amber:lan2" "switch0" "0x04" "0x08"
  	;;
  miwifi-mini)
--	ucidef_set_led_default "power" "power" "$board:red:status" "1"
-+	ucidef_set_led_default "power" "power" "$board:blue:status" "1"
+-	ucidef_set_led_default "power" "power" "$boardname:red:status" "1"
++	ucidef_set_led_default "power" "power" "$boardname:blue:status" "1"
  	;;
  mlw221|\
  mlwg2)
 diff --git a/target/linux/ramips/base-files/etc/diag.sh b/target/linux/ramips/base-files/etc/diag.sh
-index 9dbd6c4141..50102182b2 100644
+index 2f51add331..a14ac0a1b9 100644
 --- a/target/linux/ramips/base-files/etc/diag.sh
 +++ b/target/linux/ramips/base-files/etc/diag.sh
-@@ -158,10 +158,10 @@ get_status_led() {
- 		;;
+@@ -165,7 +165,8 @@ get_status_led() {
+ 	k2p|\
  	m3|\
- 	m4|\
+ 	mir3g|\
 -	miwifi-nano)
 +	miwifi-nano|\
 +	miwifi-mini)
- 		status_led="$board:blue:status"
+ 		status_led="$boardname:blue:status"
+ 		;;
+ 	db-wrt01|\
+@@ -211,7 +212,6 @@ get_status_led() {
+ 	mikrotik,rbm33g)
+ 		status_led="rbm33g:green:usr"
  		;;
 -	miwifi-mini|\
  	zte-q7)
- 		status_led="$board:red:status"
+ 		status_led="$boardname:red:status"
  		;;
 -- 
 2.17.1
