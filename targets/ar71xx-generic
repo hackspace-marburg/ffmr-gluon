@@ -85,8 +85,9 @@ factory
 
 device gl.inet-gl-ar750 gl-ar750
 manifest_alias gl-ar750
-packages $ATH10K_PACKAGES
+packages $ATH10K_PACKAGES_QCA9887
 factory
+
 
 # Linksys by Cisco
 
@@ -130,6 +131,7 @@ fi
 # OCEDO
 
 device ocedo-koala koala
+packages $ATH10K_PACKAGES
 factory
 
 
@@ -180,6 +182,7 @@ alias tp-link-cpe210-v1.1
 alias tp-link-cpe220-v1.1
 
 device tp-link-cpe210-v2.0 cpe210-v2
+device tp-link-cpe210-v3.0 cpe210-v3
 
 device tp-link-cpe510-v1.0 cpe510-520-v1
 alias tp-link-cpe510-v1.1
@@ -307,7 +310,7 @@ device ubiquiti-ls-sr71 ubnt-ls-sr71 # BROKEN: Untested
 fi
 
 device ubiquiti-unifi-ac-lite ubnt-unifiac-lite
-alias ubiquiti-unifi-ac-lr
+alias ubiquiti-unifi-ac-lite-mesh
 packages $ATH10K_PACKAGES
 factory
 
