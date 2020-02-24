@@ -9,18 +9,18 @@ from before 925e63e71fa6691f3fa374f71c77d0a91c7e7539.
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/target/linux/ramips/mt7620/config-4.14 b/target/linux/ramips/mt7620/config-4.14
-index d60696b225..befbf2e503 100644
+index 74da9ec5a1..3456285218 100644
 --- a/target/linux/ramips/mt7620/config-4.14
 +++ b/target/linux/ramips/mt7620/config-4.14
-@@ -155,7 +155,7 @@ CONFIG_MTD_CMDLINE_PARTS=y
+@@ -160,7 +160,7 @@ CONFIG_MTD_CMDLINE_PARTS=y
  CONFIG_MTD_M25P80=y
  CONFIG_MTD_PHYSMAP=y
  CONFIG_MTD_SPI_NOR=y
 -CONFIG_MTD_SPI_NOR_USE_4K_SECTORS=y
 +# CONFIG_MTD_SPI_NOR_USE_4K_SECTORS is not set
  CONFIG_MTD_SPI_NOR_USE_4K_SECTORS_LIMIT=16384
- CONFIG_MTD_SPLIT_FIRMWARE=y
  CONFIG_MTD_SPLIT_JIMAGE_FW=y
+ CONFIG_MTD_SPLIT_SEAMA_FW=y
 -- 
-2.17.1
+2.23.1
 
