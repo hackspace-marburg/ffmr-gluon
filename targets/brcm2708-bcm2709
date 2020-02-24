@@ -1,4 +1,8 @@
-. targets/brcm2708.inc
+include 'brcm2708.inc'
 
-device raspberry-pi-2 rpi-2
-manifest_alias raspberry-pi-2-model-b-rev-1.1
+device('raspberrypi-2-model-b', 'rpi-2', {
+	manifest_aliases = {
+		-- from Gluon 2019.1 and older
+		'raspberry-pi-2-model-b-rev-1.1',
+	},
+})

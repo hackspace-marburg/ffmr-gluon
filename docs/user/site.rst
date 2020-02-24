@@ -120,29 +120,15 @@ wifi24 \: optional
     WLAN configuration for 2.4 GHz devices.
     ``channel`` must be set to a valid wireless channel for your radio.
 
-    There are currently three interface types available. You may choose to
+    There are currently two interface types available. You may choose to
     configure any subset of them:
 
     - ``ap`` creates a master interface where clients may connect
     - ``mesh`` creates an 802.11s mesh interface with forwarding disabled
-    - ``ibss`` creates an ad-hoc interface
 
     Each interface may be disabled by setting ``disabled`` to ``true``.
     This will only affect new installations.
     Upgrades will not change the disabled state.
-
-    Additionally it is possible to configure the ``supported_rates`` and ``basic_rate``
-    of each radio. Both are optional, by default hostapd/driver dictate the rates.
-    If ``supported_rates`` is set, ``basic_rate`` is required, because ``basic_rate``
-    has to be a subset of ``supported_rates``. Possible values are: 
-
-    - 6000, 9000, 12000, 18000, 24000, 36000, 48000, 54000 (OFDM)
-    - 1000, 5500, 11000 (legacy 802.11b, DSSS)
-
-    The example below disables legacy 802.11b rates (DSSS) for performance reasons.  
-    For backwards compatibility in 802.11, this setting only effects 802.11a/b/g rates. 
-    I.e in 802.11n 6 MBit/s is announced  all time. In 802.11ac the field is used to 
-    derive the length of a packet.
 
     ``ap`` requires a single parameter, a string, named ``ssid`` which sets the
     interface's ESSID. This is the WiFi the clients connect to.
@@ -152,18 +138,13 @@ wifi24 \: optional
     don't want users to connect to this mesh-SSID, so use a cryptic id that no
     one will accidentally mistake for the client WiFi.
 
-    ``ibss`` requires two parameters: ``ssid`` (a string) and ``bssid`` (a MAC).
-    An optional parameter ``vlan`` (integer) is supported.
-
-    Both ``mesh`` and ``ibss`` accept an optional ``mcast_rate`` (kbit/s) parameter for
+    ``mesh`` also accepts an optional ``mcast_rate`` (kbit/s) parameter for
     setting the multicast bitrate. Increasing the default value of 1000 to something
     like 12000 is recommended.
     ::
 
        wifi24 = {
          channel = 11,
-         supported_rates = {6000, 9000, 12000, 18000, 24000, 36000, 48000, 54000},
-         basic_rate = {6000, 9000, 18000, 36000, 54000},
          ap = {
            ssid = 'alpha-centauri.freifunk.net',
          },
@@ -171,15 +152,31 @@ wifi24 \: optional
            id = 'ueH3uXjdp',
            mcast_rate = 12000,
          },
-         ibss = {
-           ssid = 'ff:ff:ff:ee:ba:be',
-           bssid = 'ff:ff:ff:ee:ba:be',
-           mcast_rate = 12000,
-         },
        },
+
+.. _user-site-wifi5:
 
 wifi5 \: optional
     Same as `wifi24` but for the 5Ghz radio.
+
+    Additionally a range of channels that are safe to use outsides on the 5 GHz band can
+    be set up through ``outdoor_chanlist``, which allows for a space-separated list of
+    channels and channel ranges, separated by a hyphen.
+    When set this offers the outdoor mode flag for 5 GHz radios in the config mode which
+    reconfigures the AP to select its channel from outdoor chanlist, while respecting
+    regulatory specifications, and  disables mesh on that radio.
+    The ``outdoors`` option in turn allows to configure when outdoor mode will be enabled.
+    When set to ``true`` all 5 GHz radios will use outdoor channels, while on ``false``
+    the outdoor mode will be completely disabled. The default setting is ``'preset'``,
+    which will enable outdoor mode automatically on outdoor-capable devices.
+    ::
+
+      wifi5 = {
+        channel = 44,
+        outdoor_chanlist = "100-140",
+
+        [...]
+      },
 
 next_node \: package
     Configuration of the local node feature of Gluon
@@ -220,7 +217,8 @@ mesh
     Gluon generally segments layer-2 meshes so that each node becomes IGMP/MLD
     querier for its own local clients. This is necessary for reliable multicast
     snooping. The segmentation is realized by preventing IGMP/MLD queries from
-    passing through the mesh.
+    passing through the mesh. See also
+    :ref:`gluon-mesh-batman-adv <igmp-mld-domain-segmentation>` for details.
 
     By default, not only queries are filtered, but also membership report and
     leave packets, as they add to the background noise of the mesh. As a
@@ -234,8 +232,11 @@ mesh
     In addition, options specific to the batman-adv routing protocol can be set
     in the *batman_adv* section:
 
-    The optional value *routing_algo* allows to set up ``BATMAN_V`` based meshes. 
-    If unset, the routing algorithm will default to ``BATMAN_IV``.
+    The mandatory value *routing_algo* selects the batman-adv protocol variant.
+    The following values are supported:
+
+    - ``BATMAN_IV``
+    - ``BATMAN_V``
 
     The optional value *gw_sel_class* sets the gateway selection class, the
     default is ``20`` for B.A.T.M.A.N. IV and ``5000`` kbit/s for B.A.T.M.A.N. V.
@@ -245,11 +246,11 @@ mesh
       both, the TQ and the announced bandwidth.
     - **B.A.T.M.A.N. V:** with the value ``1500`` the gateway is selected if the
       throughput is at least 1500 kbit/s faster than the throughput of the
-      currently selected gateway. 
+      currently selected gateway.
 
     For details on determining the threshold, when to switch to a new gateway,
     see `batctl manpage`_, section "gw_mode".
-    
+
     .. _batctl manpage: https://www.open-mesh.org/projects/batman-adv/wiki/Gateways
 
     ::
@@ -504,11 +505,26 @@ setup_mode \: package
         skip = true,
       },
 
+.. _user-site-build-configuration:
+
 Build configuration
 -------------------
 
 The ``site.mk`` is a Makefile which defines various values
 involved in the build process of Gluon.
+
+GLUON_DEPRECATED
+    Controls whether images for deprecated devices should be built. The following
+    values are supported:
+
+    - ``0``: Do not build any images for deprecated devices.
+    - ``upgrade``: Only build sysupgrade images for deprecated devices.
+    - ``full``: Build both sysupgrade and factory images for deprecated devices.
+
+    Usually, devices are deprecated because their flash size is insufficient to
+    support future Gluon versions. The recommended setting is ``0`` for new sites,
+    and ``upgrade`` for existing configurations (where upgrades for existing
+    deployments of low-flash devices are required).
 
 GLUON_FEATURES
     Defines a list of features to include. The feature list is used to generate
@@ -533,11 +549,6 @@ GLUON_REGION
 GLUON_LANGS
     List of languages (as two-letter-codes) to be included in the web interface. Should always contain
     ``en``.
-
-GLUON_WLAN_MESH
-  Setting this to ``11s`` or ``ibss`` will enable generation of matching images for devices which don't
-  support both meshing modes, either at all (e.g. ralink and mediatek don't support AP+IBSS) or in the
-  same firmware (ath10k-based 5GHz). Defaults to ``11s``.
 
 .. _user-site-feature-flags:
 
@@ -569,12 +580,12 @@ prefix: The feature flag corresponding to the package *gluon-mesh-batman-adv-15*
 
 The file ``package/features`` in the Gluon repository (or
 ``features`` in site feeds) can specify additional rules for deriving package lists
-from feature flags, e.g. specifying both *status-page* and either *mesh-batman-adv-14*
-or *mesh-batman-adv-15* will automatically select the additional package
+from feature flags, e.g. specifying both *status-page* and *mesh-batman-adv-15*
+will automatically select the additional package
 *gluon-status-page-mesh-batman-adv*. In the future, selecting the flags
 *mesh-vpn-fastd* and *respondd* might automatically enable the additional
 package *gluon-mesh-vpn-fastd-respondd*, and enabling *status-page* and
-*mesh-batman-adv-15* (or *-14*) with ``de`` in *GLUON_LANGS* could
+*mesh-batman-adv-15* with ``de`` in *GLUON_LANGS* could
 add the package *gluon-status-page-mesh-batman-adv-i18n-de*.
 
 In short, it is not necessary anymore to list all the individual packages that are

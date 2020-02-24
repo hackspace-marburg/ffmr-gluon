@@ -160,8 +160,6 @@ site.conf only variables
    in a domain specific way:
 
    -  mesh_vpn.fastd.syslog_level
-   -  wifi*.supported_rates
-   -  wifi*.basic_rate
    -  timezone
    -  regdom
 
@@ -200,8 +198,6 @@ domain.conf only variables
 
       -  must be a random value used to derive the vxlan id for wired meshing
 
-   -  wifi*.ibss.ssid
-   -  wifi*.ibss.bssid
    -  wifi*.mesh.id
    -  mesh_vpn.fastd.groups.*.peers.remotes
    -  mesh_vpn.fastd.groups.*.peers.key

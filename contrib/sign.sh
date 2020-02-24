@@ -2,7 +2,7 @@
 
 set -e
 
-if [ $# -ne 2 -o "-h" = "$1" -o "--help" = "$1" -o ! -r "$1" -o ! -r "$2" ]; then
+if [ $# -ne 2 ] || [ "-h" = "$1" ] || [ "--help" = "$1" ] || [ ! -r "$1" ] || [ ! -r "$2" ]; then
 	cat <<EOHELP
 Usage: $0 <secret> <manifest>
 
@@ -15,7 +15,7 @@ The script may be performed multiple times to the same document
 to indicate an approval by multiple developers.
 
 See also
- * ecdsautils on https://github.com/tcatm/ecdsautils
+ * ecdsautils on https://github.com/freifunk-gluon/ecdsautils
 
 EOHELP
 	exit 1

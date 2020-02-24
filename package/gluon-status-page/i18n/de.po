@@ -34,11 +34,11 @@ msgstr "Clients"
 msgid "Contact"
 msgstr "Kontakt"
 
-msgid "Location"
-msgstr "Position"
-
 msgid "Distance"
 msgstr "Entfernung"
+
+msgid "Domain"
+msgstr "Domäne"
 
 msgid "Error"
 msgstr "Fehler"
@@ -55,6 +55,9 @@ msgstr "Weitergeleitet"
 msgid "Gateway"
 msgstr "Gateway"
 
+msgid "Gateway Nexthop"
+msgstr "Gateway Nexthop"
+
 msgid "IP address"
 msgstr "IP-Adresse"
 
@@ -63,6 +66,9 @@ msgstr "Zuletzt gesehen"
 
 msgid "Load average"
 msgstr "Systemlast"
+
+msgid "Location"
+msgstr "Position"
 
 msgid "Mesh VPN"
 msgstr "Mesh-VPN"
@@ -93,6 +99,9 @@ msgstr "RAM"
 
 msgid "Received"
 msgstr "Empfangen"
+
+msgid "Site"
+msgstr "Site"
 
 msgid "Status"
 msgstr "Status"

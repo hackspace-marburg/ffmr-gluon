@@ -1,43 +1,55 @@
-## D-Link
+-- ASUS
 
-if [ "$BROKEN" ] || [ "$GLUON_WLAN_MESH" = '11s' ]; then
-device d-link-dir-860l-b1 dir-860l-b1 # BROKEN: IBSS untested
-fi
-
-
-## Netgear
-
-if [ "$BROKEN" ]; then
-device netgear-wndr3700v5 wndr3700v5 # BROKEN: Untested
-factory
-fi
+device('asus-rt-ac57u', 'asus_rt-ac57u', {
+	factory = false,
+})
 
 
-# BROKEN: IBSS untested
-if [ "$BROKEN" ] || [ "$GLUON_WLAN_MESH" = '11s' ]; then
+-- D-Link
 
-## ZBT
-
-device zbt-wg3526-16m zbt-wg3526-16M
-factory
-manifest_alias zbt-wg3526
-
-device zbt-wg3526-32m zbt-wg3526-32M
-factory
-
-fi
+device('d-link-dir-860l-b1', 'dir-860l-b1')
 
 
-# Devices without WLAN
+-- Netgear
 
-## Ubiquiti
+device('netgear-ex6150', 'netgear_ex6150', {
+        factory_ext = '.chk',
+})
 
-device ubnt-erx ubnt-erx
-packages '-hostapd-mini'
-factory
-sysupgrade '.tar'
+device('netgear-r6220', 'r6220', {
+	factory_ext = '.img',
+})
 
-device ubnt-erx-sfp ubnt-erx-sfp
-packages '-hostapd-mini'
-factory
-sysupgrade '.tar'
+device('netgear-wndr3700v5', 'wndr3700v5', {
+	factory = false,
+	broken = true, -- untested
+})
+
+
+-- ZBT
+
+device('zbt-wg3526-16m', 'zbt-wg3526-16M', {
+	factory = false,
+	manifest_aliases = {
+		'zbt-wg3526',
+	},
+})
+
+device('zbt-wg3526-32m', 'zbt-wg3526-32M', {
+	factory = false,
+})
+
+
+-- Devices without WLAN
+
+-- Ubiquiti
+
+device('ubnt-erx', 'ubnt-erx', {
+	factory = false,
+	packages = {'-hostapd-mini'},
+})
+
+device('ubnt-erx-sfp', 'ubnt-erx-sfp', {
+	factory = false,
+	packages = {'-hostapd-mini'},
+})
