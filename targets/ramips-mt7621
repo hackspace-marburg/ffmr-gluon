@@ -47,9 +47,11 @@ device('zbt-wg3526-32m', 'zbt-wg3526-32M', {
 device('ubnt-erx', 'ubnt-erx', {
 	factory = false,
 	packages = {'-hostapd-mini'},
+	broken = true, -- potential breakage: https://github.com/freifunk-gluon/gluon/issues/1937
 })
 
 device('ubnt-erx-sfp', 'ubnt-erx-sfp', {
 	factory = false,
 	packages = {'-hostapd-mini'},
+	broken = true, -- potential breakage: https://github.com/freifunk-gluon/gluon/issues/1937
 })
